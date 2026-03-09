@@ -4,26 +4,22 @@ const certifications = [
   {
     id: 1,
     name: 'Certificado Profissional em Gestão de Projetos',
-    description: 'Certificação internacional que valida as suas habilidades em gestão de projetos.',
-    price: 'AOA 25.000'
+    description: 'Certificação internacional que valida as suas habilidades em gestão de projetos.'
   },
   {
     id: 2,
     name: 'Certificado em Desenvolvimento Web',
-    description: 'Certificação que atesta as suas competências em desenvolvimento web front-end.',
-    price: 'AOA 30.000'
+    description: 'Certificação que atesta as suas competências em desenvolvimento web front-end.'
   },
   {
     id: 3,
     name: 'Certificado em Liderança',
-    description: 'Certificação para líderes e gestores de equipas.',
-    price: 'AOA 22.000'
+    description: 'Certificação para líderes e gestores de equipas.'
   },
   {
     id: 4,
     name: 'Certificado em Marketing Digital',
-    description: 'Certificação especializada em marketing digital e redes sociais.',
-    price: 'AOA 20.000'
+    description: 'Certificação especializada em marketing digital e redes sociais.'
   }
 ];
 
@@ -44,9 +40,8 @@ const Certifications = () => {
               <h3 className="card-title">{cert.name}</h3>
               <p>{cert.description}</p>
               <div className="card-footer">
-                <strong className="text-gradient">{cert.price}</strong>
-                <NavLink to="/registro" className="btn btn-ghost">
-                  Saiba Mais
+                <NavLink to="/registro" className="btn btn-primary" style={{ width: '100%' }}>
+                  Saber Mais
                 </NavLink>
               </div>
             </div>

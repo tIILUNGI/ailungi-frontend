@@ -29,7 +29,6 @@ const AdminCreateCourse = () => {
     workload: '',
     modality: 'Online',
     schedule: 'On-demand',
-    price: '',
     description: ''
   });
 
@@ -56,7 +55,6 @@ const AdminCreateCourse = () => {
       workload: '',
       modality: 'Online',
       schedule: 'On-demand',
-      price: '',
       description: ''
     });
     alert('Curso criado com sucesso!');
@@ -159,19 +157,6 @@ const AdminCreateCourse = () => {
                 />
               </div>
               
-              <div className="form-group">
-                <label>{t.admin.coursePrice}</label>
-                <input
-                  type="text"
-                  value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  className="form-input"
-                  placeholder="AOA 150.000,00"
-                />
-              </div>
-            </div>
-            
-            <div className="form-row">
               <div className="form-group">
                 <label>{t.admin.courseModality}</label>
                 <select

@@ -139,14 +139,15 @@ main {
 }
 
 .brand-logo-frame {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
   background: white;
-  border: 1px solid rgba(226, 230, 242, 0.9);
-  box-shadow: 0 8px 20px rgba(12, 16, 28, 0.14);
+  border: 2px solid rgba(45, 58, 140, 0.15);
+  box-shadow: 0 12px 32px rgba(12, 16, 28, 0.18);
   display: grid;
   place-items: center;
+  padding: 8px;
 }
 
 .brand-logo-frame--header {
@@ -178,8 +179,8 @@ main {
 }
 
 .brand-logo {
-  width: 72%;
-  height: 72%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -608,7 +609,210 @@ main {
 .card-grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Card de curso profissional */
+.course-card {
+  background: white;
+  border-radius: 20px;
+  padding: 0;
+  border: 1px solid rgba(226, 230, 242, 0.9);
+  box-shadow: 0 16px 32px rgba(12, 16, 28, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(12, 16, 28, 0.15);
+}
+
+.course-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(226, 230, 242, 0.6);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.course-card-area {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ilungi-primary);
+  background: rgba(45, 58, 140, 0.08);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.course-card-body {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ilungi-ink);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.course-card-desc {
+  font-size: 0.9rem;
+  color: var(--ilungi-muted);
+  line-height: 1.6;
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.course-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--ilungi-muted-2);
+}
+
+.course-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.course-card-meta-item svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+}
+
+.course-card-footer {
+  padding: 20px 24px;
+  border-top: 1px solid rgba(226, 230, 242, 0.6);
+  background: rgba(243, 244, 249, 0.5);
+}
+
+/* Catálogo de cursos profissional */
+.course-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.course-catalog-item {
+  display: grid;
+  grid-template-columns: 100px 1fr auto auto;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 28px;
+  background: white;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 230, 242, 0.9);
+  box-shadow: 0 8px 24px rgba(12, 16, 28, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.course-catalog-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(12, 16, 28, 0.12);
+}
+
+.course-catalog-code {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ilungi-primary);
+  background: rgba(45, 58, 140, 0.06);
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.course-catalog-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.course-catalog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.course-catalog-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ilungi-ink);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.course-catalog-area {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ilungi-muted-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.course-catalog-meta {
+  display: flex;
+  gap: 20px;
+}
+
+.course-catalog-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.course-catalog-meta-item .label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ilungi-muted-2);
+}
+
+.course-catalog-meta-item .value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ilungi-ink);
+}
+
+.course-catalog-action {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .course-catalog-item {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .course-catalog-meta {
+    justify-content: flex-start;
+    gap: 24px;
+  }
+  
+  .course-catalog-action {
+    justify-content: stretch;
+  }
+  
+  .course-catalog-action .btn {
+    width: 100%;
+  }
 }
 
 .app-grid {

@@ -210,10 +210,6 @@ const StudentCourses = () => {
           
           <div className="payment-info-card">
             <h3>{t.student.paymentInstructions}</h3>
-            <div className="payment-amount">
-              <span className="label">{t.student.coursePrice}:</span>
-              <span className="amount">AOA 150.000,00</span>
-            </div>
             
             <div className="bank-details">
               <h4>{t.student.bankDetails}</h4>
@@ -300,7 +296,6 @@ const StudentCourses = () => {
               <h3 className="course-title">{course.name}</h3>
               <div className="course-meta">
                 <span>{course.schedule}</span>
-                <span className="course-price">AOA 150.000,00</span>
               </div>
               
               {enrollment ? (

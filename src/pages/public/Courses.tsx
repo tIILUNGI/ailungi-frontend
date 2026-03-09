@@ -14,40 +14,33 @@ const Courses = () => {
           </p>
         </div>
 
-        <div className="course-table">
-          <div className="course-row course-row--head">
-            <div className="course-cell">Código</div>
-            <div className="course-cell">Nome do Curso</div>
-            <div className="course-cell">Especialidade / Área</div>
-            <div className="course-cell">Carga Horária</div>
-            <div className="course-cell">Modalidade</div>
-            <div className="course-cell">Agenda</div>
-            <div className="course-cell">Ação</div>
-          </div>
-
+        <div className="course-catalog">
           {courses.map((course) => (
-            <div key={course.id} className="course-row">
-              <div className="course-cell course-code" data-label="Código">
-                {course.code}
+            <div key={course.id} className="course-catalog-item">
+              <div className="course-catalog-code">{course.code}</div>
+              <div className="course-catalog-info">
+                <div className="course-catalog-header">
+                  <h3 className="course-catalog-name">{course.name}</h3>
+                  {course.featured && <span className="pill pill--accent">Destaque</span>}
+                </div>
+                <span className="course-catalog-area">{course.area}</span>
               </div>
-              <div className="course-cell course-title" data-label="Nome do Curso">
-                <strong>{course.name}</strong>
-                {course.featured && <span className="pill pill--accent">Destaque</span>}
+              <div className="course-catalog-meta">
+                <div className="course-catalog-meta-item">
+                  <span className="label">Carga Horária</span>
+                  <span className="value">{course.workload}</span>
+                </div>
+                <div className="course-catalog-meta-item">
+                  <span className="label">Modalidade</span>
+                  <span className="value">{course.modality}</span>
+                </div>
+                <div className="course-catalog-meta-item">
+                  <span className="label">Agenda</span>
+                  <span className="value">{course.schedule}</span>
+                </div>
               </div>
-              <div className="course-cell" data-label="Especialidade / Área">
-                {course.area}
-              </div>
-              <div className="course-cell" data-label="Carga Horária">
-                {course.workload}
-              </div>
-              <div className="course-cell" data-label="Modalidade">
-                {course.modality}
-              </div>
-              <div className="course-cell" data-label="Agenda">
-                {course.schedule}
-              </div>
-              <div className="course-cell course-action" data-label="Ação">
-                <NavLink to={`/cursos/${course.id}`} className="btn btn-primary btn-sm">
+              <div className="course-catalog-action">
+                <NavLink to={`/cursos/${course.id}`} className="btn btn-primary">
                   Saber mais
                 </NavLink>
               </div>
