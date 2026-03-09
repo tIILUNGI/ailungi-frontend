@@ -7,19 +7,6 @@ const navItems = [
   { to: '/certificados/verificar', label: 'Verificar Certificados' }
 ];
 
-const externalApps = [
-  {
-    name: 'GPMOI',
-    url: 'https://gpmoi.org/',
-    short: 'GPM'
-  },
-  {
-    name: 'SCR ILUNGI',
-    url: 'https://scr.ilungi.ao/',
-    short: 'SCR'
-  }
-];
-
 const PublicHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -32,7 +19,7 @@ const PublicHeader = () => {
           </span>
           <div>
             <span className="brand-name">AILUNGI</span>
-            <span className="brand-tagline">Academia & Certificações</span>
+            <span className="brand-tagline">Academia</span>
           </div>
         </NavLink>
 
@@ -49,22 +36,6 @@ const PublicHeader = () => {
             </NavLink>
           ))}
         </nav>
-
-        <div className="nav-apps">
-          {externalApps.map((app) => (
-            <a
-              key={app.name}
-              className="app-icon"
-              href={app.url}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={app.name}
-              title={app.name}
-            >
-              <span>{app.short}</span>
-            </a>
-          ))}
-        </div>
 
         <div className="nav-actions">
           <NavLink to="/login" className="btn btn-ghost">
@@ -100,23 +71,6 @@ const PublicHeader = () => {
                 {item.label}
               </NavLink>
             ))}
-            <div className="mobile-apps">
-              {externalApps.map((app) => (
-                <a
-                  key={app.name}
-                  className="mobile-app-link"
-                  href={app.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="app-icon app-icon--sm">
-                    <span>{app.short}</span>
-                  </span>
-                  {app.name}
-                </a>
-              ))}
-            </div>
             <div className="mobile-actions">
               <NavLink to="/login" className="btn btn-ghost" onClick={() => setIsOpen(false)}>
                 Entrar

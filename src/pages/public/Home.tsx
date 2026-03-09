@@ -41,7 +41,7 @@ const Home = () => {
           <div className="hero-visual">
             <div className="hero-logo-wrap">
               <img src="/ilungi_logo.jpg" alt="AILUNGI" className="hero-logo" />
-              <span className="hero-logo-caption">Academia & Certificações Profissionais</span>
+              <span className="hero-logo-caption">Academia</span>
             </div>
             <div className="hero-mini-grid">
               <div className="hero-mini-card">

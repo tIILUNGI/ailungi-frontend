@@ -30,7 +30,7 @@ const Login = () => {
             </NavLink>
             <div>
               <span className="brand-name">AILUNGI</span>
-              <span className="brand-tagline">Academia & Certificações</span>
+              <span className="brand-tagline">Academia</span>
             </div>
           </div>
 

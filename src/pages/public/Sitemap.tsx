@@ -10,11 +10,6 @@ const Sitemap = () => {
     { to: '/registro', label: 'Criar Conta' },
   ];
 
-  const externalLinks = [
-    { href: 'https://gpmoi.org/', label: 'GPMOI' },
-    { href: 'https://scr.ilungi.ao/', label: 'SCR ILUNGI' },
-  ];
-
   const studentLinks = [
     { to: '/app/aluno', label: 'Painel do Aluno' },
     { to: '/app/aluno/cursos', label: 'Cursos Disponíveis' },
@@ -46,13 +41,6 @@ const Sitemap = () => {
               {publicLinks.map((link) => (
                 <li key={link.to}>
                   <NavLink to={link.to}>{link.label}</NavLink>
-                </li>
-              ))}
-              {externalLinks.map((link) => (
-                <li key={link.href}>
-                  <a href={link.href} target="_blank" rel="noreferrer">
-                    {link.label}
-                  </a>
                 </li>
               ))}
             </ul>
