@@ -8,8 +8,8 @@ const AppNotFound = () => {
   return (
     <div className="app-page">
       <div className="app-empty">
-        <h2>Pagina nao encontrada</h2>
-        <p>O recurso solicitado nao existe nesta area.</p>
+        <h2>Página não encontrada</h2>
+        <p>O recurso solicitado não existe nesta área.</p>
         <NavLink to={homePath} className="btn btn-primary">
           Voltar ao painel
         </NavLink>

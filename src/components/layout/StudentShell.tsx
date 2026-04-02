@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { clearAuth, getAuth } from '../../utils/auth';
 import { useI18n } from '../../i18n/I18nContext';
@@ -9,7 +9,11 @@ const StudentShell = () => {
   const auth = getAuth();
   const displayName = auth?.name ?? (auth?.email ? auth.email.split('@')[0] : 'Aluno');
   const initials = useMemo(() => displayName.slice(0, 2).toUpperCase(), [displayName]);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window === 'undefined') {
       return 'light';
@@ -25,6 +29,44 @@ const StudentShell = () => {
   const handleLogout = () => {
     clearAuth();
     navigate('/login', { replace: true });
+  };
+
+  const notifications: { id: number; title: string; time: string }[] = [];
+
+  const toggleNotifications = () => {
+    setNotifOpen((prev) => !prev);
+    setLangOpen(false);
+    setProfileOpen(false);
+  };
+
+  const toggleLanguage = () => {
+    setLangOpen((prev) => !prev);
+    setNotifOpen(false);
+    setProfileOpen(false);
+  };
+
+  const toggleProfile = () => {
+    setProfileOpen((prev) => !prev);
+    setNotifOpen(false);
+    setLangOpen(false);
+  };
+
+  const toggleSidebar = () => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 1100) {
+      setIsSidebarOpen((prev) => !prev);
+      return;
+    }
+    setIsSidebarCollapsed((prev) => !prev);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  const closeMenus = () => {
+    setProfileOpen(false);
+    setNotifOpen(false);
+    setLangOpen(false);
   };
 
   const navItems = [
@@ -108,27 +150,48 @@ const StudentShell = () => {
   ];
 
   return (
-    <div className="student-layout">
+    <div
+      className={`student-layout${isSidebarCollapsed ? ' sidebar-collapsed' : ''}${
+        isSidebarOpen ? ' sidebar-open' : ''
+      }`}
+    >
       <aside className="student-sidebar">
         <div className="student-logo-wrap">
           <img src="/ilungi_logo.jpg" alt="AILUNGI" className="student-logo-lg" />
+          <span className="student-logo-caption">Academia</span>
         </div>
-        <nav className="student-nav">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                isActive ? 'student-nav-link student-nav-link--active' : 'student-nav-link'
-              }
-              end={item.to === '/app/aluno'}
-            >
-              <span className="student-nav-icon">{item.icon}</span>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+        <div className="student-sidebar-section">
+          <span className="student-nav-title">Menu</span>
+          <nav className="student-nav">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  isActive ? 'student-nav-link student-nav-link--active' : 'student-nav-link'
+                }
+                end={item.to === '/app/aluno'}
+                onClick={closeSidebar}
+              >
+                <span className="student-nav-icon">{item.icon}</span>
+                <span className="student-nav-text">{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+
+        <div className="student-sidebar-footer">
+          <div className="student-sidebar-card">
+            <strong>Suporte Corporativo</strong>
+            <p className="card-meta">Precisa de ajuda? A equipa ILUNGI responde rápido.</p>
+            <button type="button" className="btn btn-light btn-sm">
+              Contactar
+            </button>
+          </div>
+        </div>
       </aside>
+
+      <div className="sidebar-overlay" onClick={closeSidebar} />
 
       <div className="student-main">
         <div className="student-topbar">
@@ -137,61 +200,129 @@ const StudentShell = () => {
           <div className="student-topbar-actions">
             <button
               type="button"
-              className="icon-btn theme-toggle"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+              className="icon-btn icon-btn--circle"
+              onClick={toggleSidebar}
+              aria-label={isSidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
+              title={isSidebarCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
             >
-              {theme === 'dark' ? 'Light' : 'Dark'}
-            </button>
-
-            <select
-              className="lang-select"
-              value={language}
-              onChange={(event) => setLanguage(event.target.value as 'pt' | 'en')}
-              aria-label="Idioma"
-            >
-              <option value="pt">PT</option>
-              <option value="en">EN</option>
-            </select>
-
-            <button type="button" className="icon-btn notif-btn" aria-label="Notificações">
-              <span className="notif-dot" />
-              <svg
-                viewBox="0 0 24 24"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
-                <path d="M13.73 21a2 2 0 01-3.46 0" />
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
 
-            <div className="profile-menu">
+            <button
+              type="button"
+              className="icon-btn icon-btn--circle theme-toggle"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+              aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+            >
+              {theme === 'dark' ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )}
+            </button>
+
+            <div className="menu-group">
               <button
                 type="button"
-                className="profile-trigger"
-                onClick={() => setMenuOpen((prev) => !prev)}
+                className="icon-btn icon-btn--circle"
+                onClick={toggleLanguage}
+                aria-label="Selecionar idioma"
+                aria-expanded={langOpen}
+                title={`Idioma: ${language.toUpperCase()}`}
               >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20" />
+                </svg>
+              </button>
+              {langOpen && (
+                <div className="menu-dropdown">
+                  <button
+                    type="button"
+                    className="menu-item"
+                    onClick={() => {
+                      setLanguage('pt');
+                      setLangOpen(false);
+                    }}
+                  >
+                    Português
+                  </button>
+                  <button
+                    type="button"
+                    className="menu-item"
+                    onClick={() => {
+                      setLanguage('en');
+                      setLangOpen(false);
+                    }}
+                  >
+                    English
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="menu-group">
+              <button
+                type="button"
+                className="icon-btn icon-btn--circle notif-btn"
+                aria-label="Notificações"
+                aria-expanded={notifOpen}
+                onClick={toggleNotifications}
+                title="Notificações"
+              >
+                {notifications.length > 0 && <span className="notif-dot" />}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
+                  <path d="M13.73 21a2 2 0 01-3.46 0" />
+                </svg>
+              </button>
+              {notifOpen && (
+                <div className="menu-dropdown notif-dropdown">
+                  <div className="notif-header">Notificações</div>
+                  {notifications.length > 0 ? (
+                    notifications.map((item) => (
+                      <div key={item.id} className="notif-item">
+                        <strong className="notif-title">{item.title}</strong>
+                        <span className="notif-time">{item.time}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="notif-empty">Sem notificações no momento.</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="profile-menu">
+              <button type="button" className="profile-trigger" onClick={toggleProfile}>
                 <span className="profile-avatar">{initials}</span>
-                <span className="profile-name">{displayName}</span>
+                <span className="profile-info">
+                  <span className="profile-name">{displayName}</span>
+                  <span className="profile-role">Aluno</span>
+                </span>
                 <span className="profile-caret" />
               </button>
-              {menuOpen && (
+              {profileOpen && (
                 <div className="profile-dropdown">
-                  <NavLink
-                    to="/app/aluno/perfil"
-                    className="profile-link"
-                    onClick={() => setMenuOpen(false)}
-                  >
+                  <div className="profile-summary">
+                    <strong>{displayName}</strong>
+                    <span>{auth?.email ?? 'email@ilungi.com'}</span>
+                  </div>
+                  <NavLink to="/app/aluno/perfil" className="profile-link" onClick={() => setProfileOpen(false)}>
                     {t.student.profile}
                   </NavLink>
                   <button type="button" className="profile-link" onClick={handleLogout}>
-                    {t.nav.logout}
+                    {t.nav?.logout || 'Sair'}
                   </button>
                 </div>
               )}
@@ -199,7 +330,7 @@ const StudentShell = () => {
           </div>
         </div>
 
-        <main className="student-content">
+        <main className="student-content" onClick={closeMenus}>
           <Outlet />
         </main>
       </div>

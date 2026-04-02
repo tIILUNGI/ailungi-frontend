@@ -9,7 +9,7 @@ const studentNav = [
   { to: '/app/aluno', label: 'Dashboard', icon: 'DB' },
   { to: '/app/aluno/cursos', label: 'Meus Cursos', icon: 'CR' },
   { to: '/app/aluno/certificados', label: 'Certificados', icon: 'CF' },
-  { to: '/app/aluno/area-estudante', label: 'Area do Estudante', icon: 'AE' }
+  { to: '/app/aluno/area-estudante', label: 'Área do Estudante', icon: 'AE' }
 ];
 
 const adminNav = [

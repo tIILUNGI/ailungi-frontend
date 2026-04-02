@@ -1,17 +1,33 @@
 ﻿import { FormEvent, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { api } from '../../services/api';
 
 const Register = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [company, setCompany] = useState('');
+  const [role, setRole] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [notice, setNotice] = useState('');
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+
+    const { data } = await api.register({
+      firstName,
+      lastName,
+      email,
+      phone,
+      company,
+      role,
+      password
+    });
+
+    setNotice(data.message ?? `Conta criada com sucesso. Enviámos um email para ${email}.`);
     setSubmitted(true);
   };
 
@@ -27,12 +43,12 @@ const Register = () => {
             </NavLink>
             <div>
               <span className="brand-name">AILUNGI</span>
-              <span className="brand-tagline">Academia</span>
+              <span className="brand-tagline">Academia Corporativa</span>
             </div>
           </div>
 
-          <h2>Criar conta</h2>
-          <p className="card-meta">Complete os seus dados para começar a aprender hoje mesmo.</p>
+          <h2>Criar conta corporativa</h2>
+          <p className="card-meta">Registe os seus dados para ativar o acesso à plataforma.</p>
 
           <form onSubmit={handleSubmit}>
             <div className="split-grid">
@@ -58,6 +74,28 @@ const Register = () => {
                   required
                 />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="company">Empresa</label>
+              <input
+                id="company"
+                type="text"
+                value={company}
+                onChange={(event) => setCompany(event.target.value)}
+                placeholder="Nome da empresa"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="role">Cargo</label>
+              <input
+                id="role"
+                type="text"
+                value={role}
+                onChange={(event) => setRole(event.target.value)}
+                placeholder="Função ou departamento"
+              />
             </div>
 
             <div>
@@ -115,7 +153,7 @@ const Register = () => {
 
             {submitted && (
               <div className="inline-notice" role="status" aria-live="polite">
-                Conta criada com sucesso. Enviámos um email de boas-vindas para {email}.
+                {notice}
               </div>
             )}
 
@@ -145,20 +183,20 @@ const Register = () => {
 
         <div className="auth-panel">
           <span className="badge badge--ghost">Inscrição Executiva</span>
-          <h1>Crie a sua conta profissional</h1>
+          <h1>Desbloqueie a experiência corporativa</h1>
           <p>
-            Aceda ao catálogo completo, certificações e conteúdos premium preparados por especialistas
-            da AILUNGI.
+            Tenha acesso ao catálogo completo, certificações profissionais e conteúdos premium
+            preparados por especialistas da AILUNGI.
           </p>
           <div className="auth-benefits">
             <div className="auth-benefit">
-              <span className="auth-dot" /> Registo rápido com confirmação imediata
+              <span className="auth-dot" /> Registo rápido com validação da equipa ILUNGI
             </div>
             <div className="auth-benefit">
-              <span className="auth-dot" /> Catálogo com 34 cursos especializados
+              <span className="auth-dot" /> Conteúdos alinhados às normas ISO e boas práticas
             </div>
             <div className="auth-benefit">
-              <span className="auth-dot" /> Certificados digitais com validação online
+              <span className="auth-dot" /> Certificados digitais com verificação online
             </div>
           </div>
         </div>

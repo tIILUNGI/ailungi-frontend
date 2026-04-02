@@ -1,81 +1,82 @@
-import { useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../../../i18n/I18nContext';
-import { courses } from '../../../data/courses';
-
-type Certificate = {
-  id: number;
-  studentName: string;
-  studentEmail: string;
-  courseName: string;
-  courseCode: string;
-  issueDate: string;
-  status: 'issued' | 'pending' | 'cancelled';
-  certificateNumber: string;
-};
+import { Course } from '../../../data/courses';
+import { api, AdminCertificate } from '../../../services/api';
 
 const AdminIssueCertificate = () => {
   const { t } = useI18n();
-  const [certificates, setCertificates] = useState<Certificate[]>([
-    {
-      id: 1,
-      studentName: 'João Silva',
-      studentEmail: 'joao@email.com',
-      courseName: 'Compliance Officer',
-      courseCode: 'CC-022',
-      issueDate: '2026-02-15',
-      status: 'issued',
-      certificateNumber: 'AILUNGI-2026-001'
-    },
-    {
-      id: 2,
-      studentName: 'Maria Costa',
-      studentEmail: 'maria@email.com',
-      courseName: 'Governança Corporativa',
-      courseCode: 'CC-029',
-      issueDate: '2026-02-10',
-      status: 'issued',
-      certificateNumber: 'AILUNGI-2026-002'
-    }
-  ]);
-  
   const [showForm, setShowForm] = useState(false);
+  const [certificates, setCertificates] = useState<AdminCertificate[]>([]);
+  const [coursesList, setCoursesList] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     studentName: '',
     studentEmail: '',
     courseId: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    let isMounted = true;
+
+    Promise.all([api.getCourses(), api.getAdminCertificates()])
+      .then(([coursesResponse, certResponse]) => {
+        if (isMounted) {
+          setCoursesList(coursesResponse.data);
+          setCertificates(certResponse.data);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const nextCertificateNumber = useMemo(() => {
+    const nextIndex = certificates.length + 1;
+    return `AILUNGI-${new Date().getFullYear()}-${String(nextIndex).padStart(3, '0')}`;
+  }, [certificates.length]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const selectedCourse = courses.find(c => c.id === parseInt(formData.courseId));
-    
-    const newCertificate: Certificate = {
+
+    const selectedCourse = coursesList.find((course) => course.id === Number(formData.courseId));
+
+    const newCertificate: AdminCertificate = {
       id: certificates.length + 1,
       studentName: formData.studentName,
       studentEmail: formData.studentEmail,
-      courseName: selectedCourse?.name || '',
-      courseCode: selectedCourse?.code || '',
+      courseName: selectedCourse?.name ?? 'Curso não definido',
+      courseCode: selectedCourse?.code ?? '—',
       issueDate: new Date().toISOString().split('T')[0],
       status: 'issued',
-      certificateNumber: `AILUNGI-${new Date().getFullYear()}-${String(certificates.length + 1).padStart(3, '0')}`
+      certificateNumber: nextCertificateNumber
     };
-    
-    setCertificates([...certificates, newCertificate]);
+
+    setCertificates((prev) => [newCertificate, ...prev]);
+    await api.issueCertificate({
+      studentName: formData.studentName,
+      studentEmail: formData.studentEmail,
+      courseId: formData.courseId
+    });
+
     setShowForm(false);
     setFormData({ studentName: '', studentEmail: '', courseId: '' });
     alert(`Certificado emitido com sucesso!\nNúmero: ${newCertificate.certificateNumber}`);
   };
 
-  const handleCancel = (id: number) => {
+  const handleCancel = async (id: number) => {
     if (confirm('Tem certeza que deseja cancelar este certificado?')) {
-      setCertificates(certificates.map(c => 
-        c.id === id ? { ...c, status: 'cancelled' } : c
-      ));
+      setCertificates((prev) => prev.map((cert) => (cert.id === id ? { ...cert, status: 'cancelled' } : cert)));
+      await api.cancelCertificate(id);
     }
   };
 
-  const handleDownload = (cert: Certificate) => {
+  const handleDownload = (cert: AdminCertificate) => {
     alert(`A gerar certificado...\n\nNúmero: ${cert.certificateNumber}\nAluno: ${cert.studentName}\nCurso: ${cert.courseName}`);
   };
 
@@ -87,11 +88,7 @@ const AdminIssueCertificate = () => {
           <h1>{t.admin.issueCertificate}</h1>
           <p>Gerencie e emita certificados da plataforma AILUNGI.</p>
         </div>
-        <button 
-          type="button" 
-          className="btn btn-primary"
-          onClick={() => setShowForm(!showForm)}
-        >
+        <button type="button" className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
           {showForm ? ' Cancelar' : t.admin.issueCertificate}
         </button>
       </div>
@@ -106,41 +103,41 @@ const AdminIssueCertificate = () => {
                 type="text"
                 required
                 value={formData.studentName}
-                onChange={(e) => setFormData({...formData, studentName: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
                 className="form-input"
                 placeholder="Nome completo do aluno"
               />
             </div>
-            
+
             <div className="form-group">
               <label>{t.common.email} do Aluno *</label>
               <input
                 type="email"
                 required
                 value={formData.studentEmail}
-                onChange={(e) => setFormData({...formData, studentEmail: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, studentEmail: e.target.value })}
                 className="form-input"
                 placeholder="email@exemplo.com"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Curso *</label>
               <select
                 required
                 value={formData.courseId}
-                onChange={(e) => setFormData({...formData, courseId: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
                 className="form-input"
               >
                 <option value="">Selecione um curso</option>
-                {courses.map(course => (
+                {coursesList.map((course) => (
                   <option key={course.id} value={course.id}>
                     {course.code} - {course.name}
                   </option>
                 ))}
               </select>
             </div>
-            
+
             <div className="form-actions">
               <button type="submit" className="btn btn-primary">
                 Emitir Certificado
@@ -152,15 +149,15 @@ const AdminIssueCertificate = () => {
 
       <div className="certificates-stats">
         <div className="stat-card">
-          <strong>{certificates.filter(c => c.status === 'issued').length}</strong>
-          <span>Certificados Emitidos</span>
+          <strong>{certificates.filter((c) => c.status === 'issued').length}</strong>
+          <span>Emitidos</span>
         </div>
         <div className="stat-card">
-          <strong>{certificates.filter(c => c.status === 'pending').length}</strong>
+          <strong>{certificates.filter((c) => c.status === 'pending').length}</strong>
           <span>Pendentes</span>
         </div>
         <div className="stat-card">
-          <strong>{certificates.filter(c => c.status === 'cancelled').length}</strong>
+          <strong>{certificates.filter((c) => c.status === 'cancelled').length}</strong>
           <span>Cancelados</span>
         </div>
       </div>
@@ -175,40 +172,42 @@ const AdminIssueCertificate = () => {
           <span>Status</span>
           <span>{t.common.actions}</span>
         </div>
-        {certificates.map((cert) => (
-          <div key={cert.id} className="app-table-row">
-            <span className="cert-number">{cert.certificateNumber}</span>
-            <span>{cert.studentName}</span>
-            <span>{cert.studentEmail}</span>
-            <span>{cert.courseCode}</span>
-            <span>{cert.issueDate}</span>
-            <span>
-              <span className={`pill ${cert.status === 'issued' ? 'pill--success' : cert.status === 'cancelled' ? 'pill--danger' : ''}`}>
-                {cert.status === 'issued' && 'Emitido'}
-                {cert.status === 'pending' && 'Pendente'}
-                {cert.status === 'cancelled' && 'Cancelado'}
-              </span>
-            </span>
-            <span className="app-table-actions">
-              <button 
-                type="button" 
-                className="btn btn-ghost btn-sm"
-                onClick={() => handleDownload(cert)}
-              >
-                Download
-              </button>
-              {cert.status !== 'cancelled' && (
-                <button 
-                  type="button" 
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => handleCancel(cert.id)}
-                >
-                  Cancelar
-                </button>
-              )}
-            </span>
+        {isLoading ? (
+          <div className="empty-state">
+            <p>A carregar certificados...</p>
           </div>
-        ))}
+        ) : certificates.length > 0 ? (
+          certificates.map((cert) => (
+            <div key={cert.id} className="app-table-row">
+              <span className="cert-number">{cert.certificateNumber}</span>
+              <span>{cert.studentName}</span>
+              <span>{cert.studentEmail}</span>
+              <span>{cert.courseCode}</span>
+              <span>{cert.issueDate}</span>
+              <span>
+                <span className={`pill ${cert.status === 'issued' ? 'pill--success' : cert.status === 'cancelled' ? 'pill--danger' : ''}`}>
+                  {cert.status === 'issued' && 'Emitido'}
+                  {cert.status === 'pending' && 'Pendente'}
+                  {cert.status === 'cancelled' && 'Cancelado'}
+                </span>
+              </span>
+              <span className="app-table-actions">
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => handleDownload(cert)}>
+                  Download
+                </button>
+                {cert.status !== 'cancelled' && (
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => handleCancel(cert.id)}>
+                    Cancelar
+                  </button>
+                )}
+              </span>
+            </div>
+          ))
+        ) : (
+          <div className="empty-state">
+            <p>Sem certificados emitidos. Os dados aparecerão aqui após integração.</p>
+          </div>
+        )}
       </div>
     </div>
   );

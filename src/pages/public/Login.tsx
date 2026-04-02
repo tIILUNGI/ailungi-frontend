@@ -1,5 +1,6 @@
 ﻿import { FormEvent, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
 import { setAuth } from '../../utils/auth';
 
 const Login = () => {
@@ -8,13 +9,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'aluno' | 'admin'>('aluno');
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setAuth({
-      role,
-      email,
-      name: email.split('@')[0]
-    });
+    const { data } = await api.login({ email, password, role });
+    setAuth(data);
     navigate(role === 'admin' ? '/app/admin' : '/app/aluno');
   };
 
@@ -30,12 +28,12 @@ const Login = () => {
             </NavLink>
             <div>
               <span className="brand-name">AILUNGI</span>
-              <span className="brand-tagline">Academia</span>
+              <span className="brand-tagline">Academia Corporativa</span>
             </div>
           </div>
 
-          <h2>Entrar na plataforma</h2>
-          <p className="card-meta">Aceda com o seu email corporativo ou pessoal.</p>
+          <h2>Acesso à plataforma</h2>
+          <p className="card-meta">Entre com as credenciais do seu ambiente corporativo.</p>
 
           <form onSubmit={handleSubmit}>
             <div>
@@ -87,27 +85,27 @@ const Login = () => {
           <p className="card-meta" style={{ marginTop: '20px', textAlign: 'center' }}>
             Não tem uma conta?{' '}
             <NavLink to="/registro" className="nav-link nav-link--active">
-              Criar conta grátis
+              Criar conta
             </NavLink>
           </p>
         </div>
 
         <div className="auth-panel">
           <span className="badge badge--ghost">Acesso Corporativo</span>
-          <h1>Bem-vindo à AILUNGI</h1>
+          <h1>Segurança e conformidade em cada login</h1>
           <p>
-            Entre na sua conta e continue a sua jornada em governança, risco e compliance com
-            conteúdos alinhados às melhores práticas internacionais.
+            A plataforma ILUNGI foi desenhada para ambientes empresariais com foco em governança,
+            auditoria e controle de acesso.
           </p>
           <div className="auth-benefits">
             <div className="auth-benefit">
-              <span className="auth-dot" /> Trilhas executivas e certificações reconhecidas
+              <span className="auth-dot" /> Políticas de acesso e trilhas executivas
             </div>
             <div className="auth-benefit">
-              <span className="auth-dot" /> Materiais estratégicos e mentoria especializada
+              <span className="auth-dot" /> Conteúdos alinhados às normas internacionais
             </div>
             <div className="auth-benefit">
-              <span className="auth-dot" /> Acesso seguro ao seu histórico académico
+              <span className="auth-dot" /> Suporte dedicado para equipas e gestores
             </div>
           </div>
         </div>

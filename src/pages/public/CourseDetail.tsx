@@ -1,10 +1,48 @@
-﻿import { NavLink, useParams } from 'react-router-dom';
-import { getCourseById } from '../../data/courses';
+﻿import { useEffect, useState } from 'react';
+import { NavLink, useParams } from 'react-router-dom';
+import { Course } from '../../data/courses';
+import { api } from '../../services/api';
 
 const CourseDetail = () => {
   const { id } = useParams();
   const courseId = Number(id);
-  const course = Number.isNaN(courseId) ? undefined : getCourseById(courseId);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!Number.isNaN(courseId)) {
+      api
+        .getCourseById(courseId)
+        .then(({ data }) => {
+          if (isMounted) {
+            setCourse(data);
+          }
+        })
+        .finally(() => {
+          if (isMounted) {
+            setIsLoading(false);
+          }
+        });
+    } else {
+      setIsLoading(false);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId]);
+
+  if (isLoading) {
+    return (
+      <section className="section">
+        <div className="container empty-state">
+          <p>A carregar curso...</p>
+        </div>
+      </section>
+    );
+  }
 
   if (!course) {
     return (

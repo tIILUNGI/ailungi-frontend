@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../../../i18n/I18nContext';
 
 type User = {
@@ -13,7 +12,6 @@ type User = {
 
 const AdminCreateUser = () => {
   const { t } = useI18n();
-  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([
     { id: 1, name: 'João Silva', email: 'joao@email.com', role: 'Aluno', status: 'Ativo', createdAt: '2026-01-15' },
     { id: 2, name: 'Maria Costa', email: 'maria@email.com', role: 'Aluno', status: 'Ativo', createdAt: '2026-02-01' },

@@ -1,34 +1,47 @@
-import { FormEvent, useState } from 'react';
-
-type CertificateResult = {
-  name: string;
-  course: string;
-  date: string;
-  code: string;
-};
+﻿import { FormEvent, useState } from 'react';
+import { useCallback, useEffect } from 'react';
+import { api, CertificateVerification } from '../../services/api';
+import { useSearchParams } from 'react-router-dom';
 
 const VerifyCertificate = () => {
   const [code, setCode] = useState('');
   const [hasResult, setHasResult] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const [result, setResult] = useState<CertificateResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<CertificateVerification | null>(null);
+  const [searchParams] = useSearchParams();
+
+  const runVerification = useCallback(async (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      setHasResult(false);
+      setIsValid(false);
+      setResult(null);
+      setIsLoading(false);
+      return;
+    }
+
+    setHasResult(true);
+    setIsLoading(true);
+
+    const { data } = await api.verifyCertificate(trimmed);
+
+    setIsValid(Boolean(data));
+    setResult(data ?? null);
+    setIsLoading(false);
+  }, []);
+
+  useEffect(() => {
+    const initialCode = searchParams.get('codigo');
+    if (initialCode) {
+      setCode(initialCode);
+      runVerification(initialCode);
+    }
+  }, [searchParams, runVerification]);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    setHasResult(true);
-
-    if (code.trim().toUpperCase().startsWith('AILUNGI')) {
-      setIsValid(true);
-      setResult({
-        name: 'João Silva',
-        course: 'Gestão de Projetos',
-        date: '15 de Janeiro, 2024',
-        code: code.trim().toUpperCase()
-      });
-    } else {
-      setIsValid(false);
-      setResult(null);
-    }
+    runVerification(code);
   };
 
   return (
@@ -40,7 +53,7 @@ const VerifyCertificate = () => {
           <p>Verifique a autenticidade de um certificado emitido pela AILUNGI.</p>
         </div>
 
-        <div className="form-wrapper">
+        <div className="verify-grid">
           <div className="form-card">
             <form onSubmit={handleSubmit}>
               <div>
@@ -51,19 +64,23 @@ const VerifyCertificate = () => {
                   value={code}
                   onChange={(event) => setCode(event.target.value)}
                   placeholder="AILUNGI-2024-XXX-000000"
+                  className="form-input"
                   required
                 />
               </div>
-              <button type="submit" className="btn btn-primary">
-                Verificar
+              <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                {isLoading ? 'A verificar...' : 'Verificar'}
               </button>
             </form>
 
-            {hasResult && (
+            {hasResult && !isLoading && (
               <div style={{ marginTop: '24px' }}>
                 {isValid && result ? (
-                  <div className="ghost-panel">
-                    <h3>Certificado Válido</h3>
+                  <div className="ghost-panel verify-result verify-result--valid">
+                    <div className="verify-result-head">
+                      <h3>Certificado Válido</h3>
+                      <span className="pill pill--success">Válido</span>
+                    </div>
                     <p>
                       <strong>Nome:</strong> {result.name}
                     </p>
@@ -78,8 +95,11 @@ const VerifyCertificate = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="ghost-panel">
-                    <h3>Certificado Não Encontrado</h3>
+                  <div className="ghost-panel verify-result verify-result--invalid">
+                    <div className="verify-result-head">
+                      <h3>Certificado Não Encontrado</h3>
+                      <span className="pill pill--danger">Inválido</span>
+                    </div>
                     <p>
                       O código do certificado fornecido não foi encontrado. Verifique o código e tente
                       novamente.
@@ -90,9 +110,23 @@ const VerifyCertificate = () => {
             )}
           </div>
 
-          <p className="card-meta" style={{ marginTop: '16px', textAlign: 'center' }}>
-            Para assistência, contacte <a href="mailto:contato@ailungi.com">contato@ailungi.com</a>
-          </p>
+          <div className="verify-side">
+            <div className="card">
+              <h3>Como funciona</h3>
+              <ul className="check-list">
+                <li>Insira o código completo do certificado.</li>
+                <li>O sistema confirma a validade e os dados principais.</li>
+                <li>Certificados inválidos não exibem informações.</li>
+              </ul>
+            </div>
+            <div className="card">
+              <h3>Precisa de ajuda?</h3>
+              <p>Para assistência, contacte a equipa ILUNGI.</p>
+              <a className="btn btn-ghost btn-sm" href="mailto:contato@ailungi.com">
+                Falar com suporte
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

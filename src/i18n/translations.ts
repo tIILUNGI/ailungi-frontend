@@ -1,325 +1,209 @@
-export const translations = {
+export type Language = 'pt' | 'en';
+
+export type TranslationKeys = {
+  common: {
+    search: string;
+    filter: string;
+    create: string;
+    save: string;
+    edit: string;
+    delete: string;
+    view: string;
+    export: string;
+    cancel: string;
+    active: string;
+    inactive: string;
+    status: string;
+    actions: string;
+    name: string;
+    email: string;
+    date: string;
+    noResults: string;
+  };
+  nav: {
+    logout: string;
+  };
+  admin: {
+    dashboard: string;
+    courses: string;
+    enrollments: string;
+    users: string;
+    certificates: string;
+    createCourse: string;
+    addUser: string;
+    areaTitle: string;
+    certificateStudent: string;
+    approve: string;
+    reject: string;
+    courseTitle: string;
+    courseModality: string;
+    courseSchedule: string;
+    userName: string;
+    userRole: string;
+    userStatus: string;
+    issueCertificate: string;
+  };
+  student: {
+    dashboard: string;
+    availableCourses: string;
+    myPath: string;
+    exams: string;
+    myCertifications: string;
+    simulator: string;
+    extras: string;
+    profile: string;
+    areaTitle: string;
+    continue: string;
+    cancel: string;
+    submitEnrollment: string;
+    fullName: string;
+    phone: string;
+    nif: string;
+    company: string;
+    jobTitle: string;
+    uploadReceipt: string;
+    paymentInstructions: string;
+    bankDetails: string;
+    enrollNow: string;
+    enrollmentPending: string;
+  };
+};
+
+export const translations: Record<Language, TranslationKeys> = {
   pt: {
-    // Common
     common: {
-      save: 'Guardar',
-      cancel: 'Cancelar',
-      edit: 'Editar',
-      delete: 'Eliminar',
-      create: 'Criar',
       search: 'Pesquisar',
       filter: 'Filtrar',
-      loading: 'A carregar...',
-      noResults: 'Sem resultados',
+      create: 'Criar',
+      save: 'Guardar',
+      edit: 'Editar',
+      delete: 'Eliminar',
+      view: 'Ver',
+      export: 'Exportar',
+      cancel: 'Cancelar',
+      active: 'Ativo',
+      inactive: 'Inativo',
+      status: 'Estado',
       actions: 'Ações',
-      status: 'Status',
       name: 'Nome',
       email: 'Email',
       date: 'Data',
-      back: 'Voltar',
-      next: 'Próximo',
-      previous: 'Anterior',
-      view: 'Ver',
-      export: 'Exportar',
-      publish: 'Publicar',
-      draft: 'Rascunho',
-      active: 'Ativo',
-      inactive: 'Inativo',
-      pending: 'Pendente',
-      approved: 'Aprovado',
-      rejected: 'Rejeitado',
+      noResults: 'Sem resultados',
     },
-    // Navigation
     nav: {
-      home: 'Início',
-      courses: 'Cursos',
-      certifications: 'Certificações',
-      login: 'Entrar',
-      register: 'Registar',
       logout: 'Sair',
-      myPath: 'O Meu Percurso',
     },
-    // Student
+    admin: {
+      dashboard: 'Painel',
+      courses: 'Cursos',
+      enrollments: 'Inscrições',
+      users: 'Utilizadores',
+      certificates: 'Certificados',
+      createCourse: 'Criar Curso',
+      addUser: 'Adicionar Utilizador',
+      areaTitle: 'Área Administrativa',
+      certificateStudent: 'Aluno',
+      approve: 'Aprovar',
+      reject: 'Rejeitar',
+      courseTitle: 'Título do Curso',
+      courseModality: 'Modalidade',
+      courseSchedule: 'Agenda',
+      userName: 'Nome',
+      userRole: 'Perfil',
+      userStatus: 'Estado',
+      issueCertificate: 'Emitir Certificado',
+    },
     student: {
       dashboard: 'Painel',
+      availableCourses: 'Cursos Disponíveis',
+      myPath: 'O Meu Percurso',
       exams: 'Exames',
-      myCertifications: 'Certificações',
+      myCertifications: 'As Minhas Certificações',
       simulator: 'Simulador',
       extras: 'Extras',
       profile: 'Perfil',
-      areaTitle: 'Área do Aluno',
-      welcome: 'Bem-vindo',
-      continueCourse: 'Continuar curso',
-      recentExams: 'Exames recentes',
-      myCertificates: 'Os meus certificados',
-      availableCourses: 'Cursos Disponíveis',
-      myPath: 'O Meu Percurso',
-      enrollNow: 'Inscrever-se',
+      areaTitle: 'Área do Estudante',
       continue: 'Continuar',
-      finish: 'Finalizar',
-      requestCertificate: 'Solicitar Certificado',
-      enrolled: 'Inscrito',
-      inProgress: 'Em Progresso',
-      completed: 'Concluído',
-      pendingPayment: 'Pendente de Pagamento',
-      paymentApproved: 'Pagamento Aprovado',
-      courseDetails: 'Detalhes do Curso',
-      lessons: 'Lições',
-      exercises: 'Exercícios',
-      continueLesson: 'Continuar Lição',
-      submitEnrollment: 'Submeter Inscrição',
-      uploadReceipt: 'Enviar Comprovativo',
-      enrollmentPending: 'Inscrição Pendente',
-      waitApproval: 'Aguardando Aprovação',
-      paymentInstructions: 'Instruções de Pagamento',
-      bankDetails: 'Dados Bancários',
-      selectCourse: 'Selecionar Curso',
+      cancel: 'Cancelar',
+      submitEnrollment: 'Solicitar Inscrição',
       fullName: 'Nome Completo',
       phone: 'Telefone',
       nif: 'NIF',
       company: 'Empresa',
       jobTitle: 'Cargo',
-      send: 'Enviar',
-      cancel: 'Cancelar',
-      kpis: {
-        coursesCompleted: 'Cursos concluídos',
-        examsTaken: 'Exames realizados',
-        certificatesEarned: 'Certificados obtidos',
-        averageScore: 'Média de score',
-      },
-    },
-    // Admin
-    admin: {
-      dashboard: 'Painel',
-      courses: 'Cursos',
-      users: 'Utilizadores',
-      certificates: 'Certificados',
-      areaTitle: 'Área Administrativa',
-      welcome: 'Bem-vindo',
-      recentActivity: 'Atividades recentes',
-      alerts: 'Alertas',
-      createCourse: 'Criar novo curso',
-      addUser: 'Adicionar utilizador',
-      issueCertificate: 'Emitir certificado',
-      kpis: {
-        activeUsers: 'Utilizadores ativos',
-        publishedCourses: 'Cursos publicados',
-        certificatesIssued: 'Certificados emitidos',
-        completionRate: 'Taxa de conclusão',
-      },
-      activity: {
-        newEnrollment: 'Nova matrícula',
-        certificateIssued: 'Certificado emitido',
-        contentReview: 'Revisão de conteúdo',
-      },
-      alertsList: {
-        pendingCertificates: 'Certificados pendentes',
-        courseUpdate: 'Atualização de curso',
-        pendingEnrollments: 'Inscrições pendentes',
-      },
-      enrollments: 'Inscrições',
-      approve: 'Aprovar',
-      reject: 'Rejeitar',
-      viewDetails: 'Ver Detalhes',
-      generateCertificate: 'Gerar Certificado',
-      editCourse: 'Editar Curso',
-      deleteCourse: 'Eliminar Curso',
-      courseTitle: 'Título do Curso',
-      courseDescription: 'Descrição',
-      courseArea: 'Área',
-      courseWorkload: 'Carga Horária',
-      courseModality: 'Modalidade',
-      courseSchedule: 'Horário',
-      saveCourse: 'Guardar Curso',
-      userName: 'Nome do Utilizador',
-      userEmail: 'Email',
-      userRole: 'Perfil',
-      userStatus: 'Estado',
-      certificateStudent: 'Aluno',
-      certificateCourse: 'Curso',
-      certificateDate: 'Data de Emissão',
-    },
-    // Auth
-    auth: {
-      loginTitle: 'Entrar na sua conta',
-      loginSubtitle: 'Aceda à plataforma AILUNGI',
-      email: 'Endereço de email',
-      password: 'Palavra-passe',
-      rememberMe: 'Lembrar-me',
-      forgotPassword: 'Esqueceu a palavra-passe?',
-      loginButton: 'Entrar',
-      noAccount: 'Ainda não tem conta?',
-      registerHere: 'Registe-se aqui',
-    },
-    // Footer
-    footer: {
-      allRightsReserved: 'Todos os direitos reservados',
-      privacyPolicy: 'Política de Privacidade',
-      termsOfService: 'Termos de Serviço',
-      contact: 'Contacte-nos',
+      uploadReceipt: 'Comprovativo de Pagamento',
+      paymentInstructions: 'Instruções de Pagamento',
+      bankDetails: 'Dados Bancários',
+      enrollNow: 'Inscrever Agora',
+      enrollmentPending: 'Pendente',
     },
   },
   en: {
-    // Common
     common: {
-      save: 'Save',
-      cancel: 'Cancel',
-      edit: 'Edit',
-      delete: 'Delete',
-      create: 'Create',
       search: 'Search',
       filter: 'Filter',
-      loading: 'Loading...',
-      noResults: 'No results',
-      actions: 'Actions',
+      create: 'Create',
+      save: 'Save',
+      edit: 'Edit',
+      delete: 'Delete',
+      view: 'View',
+      export: 'Export',
+      cancel: 'Cancel',
+      active: 'Active',
+      inactive: 'Inactive',
       status: 'Status',
+      actions: 'Actions',
       name: 'Name',
       email: 'Email',
       date: 'Date',
-      back: 'Back',
-      next: 'Next',
-      previous: 'Previous',
-      view: 'View',
-      export: 'Export',
-      publish: 'Publish',
-      draft: 'Draft',
-      active: 'Active',
-      inactive: 'Inactive',
-      pending: 'Pending',
-      approved: 'Approved',
-      rejected: 'Rejected',
+      noResults: 'No results',
     },
-    // Navigation
     nav: {
-      home: 'Home',
-      courses: 'Courses',
-      certifications: 'Certifications',
-      login: 'Login',
-      register: 'Register',
       logout: 'Logout',
-      myPath: 'My Path',
     },
-    // Student
+    admin: {
+      dashboard: 'Dashboard',
+      courses: 'Courses',
+      enrollments: 'Enrollments',
+      users: 'Users',
+      certificates: 'Certificates',
+      createCourse: 'Create Course',
+      addUser: 'Add User',
+      areaTitle: 'Admin Area',
+      certificateStudent: 'Student',
+      approve: 'Approve',
+      reject: 'Reject',
+      courseTitle: 'Course Title',
+      courseModality: 'Modality',
+      courseSchedule: 'Schedule',
+      userName: 'Name',
+      userRole: 'Role',
+      userStatus: 'Status',
+      issueCertificate: 'Issue Certificate',
+    },
     student: {
       dashboard: 'Dashboard',
+      availableCourses: 'Available Courses',
+      myPath: 'My Path',
       exams: 'Exams',
-      myCertifications: 'Certifications',
+      myCertifications: 'My Certifications',
       simulator: 'Simulator',
       extras: 'Extras',
       profile: 'Profile',
       areaTitle: 'Student Area',
-      welcome: 'Welcome',
-      continueCourse: 'Continue course',
-      recentExams: 'Recent exams',
-      myCertificates: 'My certificates',
-      availableCourses: 'Available Courses',
-      myPath: 'My Path',
-      enrollNow: 'Enroll Now',
       continue: 'Continue',
-      finish: 'Finish',
-      requestCertificate: 'Request Certificate',
-      enrolled: 'Enrolled',
-      inProgress: 'In Progress',
-      completed: 'Completed',
-      pendingPayment: 'Pending Payment',
-      paymentApproved: 'Payment Approved',
-      courseDetails: 'Course Details',
-      lessons: 'Lessons',
-      exercises: 'Exercises',
-      continueLesson: 'Continue Lesson',
+      cancel: 'Cancel',
       submitEnrollment: 'Submit Enrollment',
-      uploadReceipt: 'Upload Receipt',
-      enrollmentPending: 'Enrollment Pending',
-      waitApproval: 'Waiting Approval',
-      paymentInstructions: 'Payment Instructions',
-      bankDetails: 'Bank Details',
-      selectCourse: 'Select Course',
       fullName: 'Full Name',
       phone: 'Phone',
-      nif: 'NIF',
+      nif: 'Tax ID',
       company: 'Company',
       jobTitle: 'Job Title',
-      send: 'Send',
-      cancel: 'Cancel',
-      kpis: {
-        coursesCompleted: 'Completed courses',
-        examsTaken: 'Exams taken',
-        certificatesEarned: 'Certificates earned',
-        averageScore: 'Average score',
-      },
-    },
-    // Admin
-    admin: {
-      dashboard: 'Dashboard',
-      courses: 'Courses',
-      users: 'Users',
-      certificates: 'Certificates',
-      areaTitle: 'Admin Area',
-      welcome: 'Welcome',
-      recentActivity: 'Recent Activity',
-      alerts: 'Alerts',
-      createCourse: 'Create new course',
-      addUser: 'Add user',
-      issueCertificate: 'Issue certificate',
-      kpis: {
-        activeUsers: 'Active users',
-        publishedCourses: 'Published courses',
-        certificatesIssued: 'Certificates issued',
-        completionRate: 'Completion rate',
-      },
-      activity: {
-        newEnrollment: 'New enrollment',
-        certificateIssued: 'Certificate issued',
-        contentReview: 'Content review',
-      },
-      alertsList: {
-        pendingCertificates: 'Pending certificates',
-        courseUpdate: 'Course update',
-        pendingEnrollments: 'Pending enrollments',
-      },
-      enrollments: 'Enrollments',
-      approve: 'Approve',
-      reject: 'Reject',
-      viewDetails: 'View Details',
-      generateCertificate: 'Generate Certificate',
-      editCourse: 'Edit Course',
-      deleteCourse: 'Delete Course',
-      courseTitle: 'Course Title',
-      courseDescription: 'Description',
-      courseArea: 'Area',
-      courseWorkload: 'Workload',
-      courseModality: 'Modality',
-      courseSchedule: 'Schedule',
-      saveCourse: 'Save Course',
-      userName: 'User Name',
-      userEmail: 'Email',
-      userRole: 'Role',
-      userStatus: 'Status',
-      certificateStudent: 'Student',
-      certificateCourse: 'Course',
-      certificateDate: 'Issue Date',
-    },
-    // Auth
-    auth: {
-      loginTitle: 'Sign in to your account',
-      loginSubtitle: 'Access the AILUNGI platform',
-      email: 'Email address',
-      password: 'Password',
-      rememberMe: 'Remember me',
-      forgotPassword: 'Forgot your password?',
-      loginButton: 'Sign in',
-      noAccount: "Don't have an account?",
-      registerHere: 'Register here',
-    },
-    // Footer
-    footer: {
-      allRightsReserved: 'All rights reserved',
-      privacyPolicy: 'Privacy Policy',
-      termsOfService: 'Terms of Service',
-      contact: 'Contact us',
+      uploadReceipt: 'Payment Receipt',
+      paymentInstructions: 'Payment Instructions',
+      bankDetails: 'Bank Details',
+      enrollNow: 'Enroll Now',
+      enrollmentPending: 'Pending',
     },
   },
 };
-
-export type Language = 'pt' | 'en';
-export type TranslationKeys = typeof translations.pt;

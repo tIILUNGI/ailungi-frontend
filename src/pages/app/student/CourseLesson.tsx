@@ -1,42 +1,39 @@
-import { useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { courses, getCourseById } from '../../../data/courses';
-import { useI18n } from '../../../i18n/I18nContext';
-
-type Lesson = {
-  id: number;
-  title: string;
-  duration: string;
-  type: 'video' | 'exercise' | 'reading' | 'quiz';
-  completed: boolean;
-};
+import { api, Lesson } from '../../../services/api';
 
 const StudentCourseLesson = () => {
-  const { t } = useI18n();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const courseId = parseInt(id || '1');
   const course = getCourseById(courseId) || courses[0];
-  
-  // Mock lessons data
-  const [lessons, setLessons] = useState<Lesson[]>([
-    { id: 1, title: 'Introdução ao Curso', duration: '15 min', type: 'video', completed: true },
-    { id: 2, title: 'Conceitos Fundamentais', duration: '30 min', type: 'video', completed: true },
-    { id: 3, title: 'Exercício 1: Aplicação Prática', duration: '45 min', type: 'exercise', completed: false },
-    { id: 4, title: 'Normas ISO 37001 - Visão Geral', duration: '25 min', type: 'reading', completed: false },
-    { id: 5, title: 'Quiz de Avaliação', duration: '20 min', type: 'quiz', completed: false },
-    { id: 6, title: 'Sistema de Gestão Antissuborno', duration: '35 min', type: 'video', completed: false },
-    { id: 7, title: 'Exercício 2: Caso de Estudo', duration: '60 min', type: 'exercise', completed: false },
-    { id: 8, title: 'Auditoria Interna', duration: '40 min', type: 'video', completed: false },
-    { id: 9, title: 'Avaliação Final', duration: '30 min', type: 'quiz', completed: false },
-  ]);
 
-  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(
-    lessons.find(l => !l.completed) || lessons[0]
-  );
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const completedCount = lessons.filter(l => l.completed).length;
-  const progress = Math.round((completedCount / lessons.length) * 100);
+  useEffect(() => {
+    let isMounted = true;
+
+    api
+      .getCourseLessons(courseId)
+      .then(({ data }) => {
+        if (isMounted) {
+          setLessons(data);
+          setCurrentLesson(data[0] ?? null);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId]);
 
   const getLessonTypeIcon = (type: string) => {
     switch (type) {
@@ -72,65 +69,43 @@ const StudentCourseLesson = () => {
     }
   };
 
-  const handleCompleteLesson = (lessonId: number) => {
-    setLessons(prev =>
-      prev.map(l =>
-        l.id === lessonId ? { ...l, completed: true } : l
-      )
-    );
-    
-    // Move to next incomplete lesson
-    const nextLesson = lessons.find(l => !l.completed && l.id !== lessonId);
-    if (nextLesson) {
-      setCurrentLesson(nextLesson);
-    }
-  };
-
   return (
     <div className="course-lesson-page">
       <div className="lesson-sidebar">
         <div className="lesson-header">
-          <button 
-            type="button" 
-            className="btn btn-ghost btn-sm"
-            onClick={() => navigate('/app/aluno/percurso')}
-          >
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => navigate('/app/aluno/percurso')}>
             ← Voltar
           </button>
           <h3>{course.name}</h3>
-          <div className="lesson-progress">
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${progress}%` }} />
-            </div>
-            <span>{progress}% completo</span>
-          </div>
+          <p className="muted">Conteúdo disponível para estudo.</p>
         </div>
-        
+
         <div className="lesson-list">
+          {isLoading && <p className="muted">A carregar aulas...</p>}
+          {!isLoading && lessons.length === 0 && <p className="muted">Sem aulas disponíveis.</p>}
           {lessons.map((lesson) => (
             <button
               key={lesson.id}
               type="button"
-              className={`lesson-item ${currentLesson?.id === lesson.id ? 'active' : ''} ${lesson.completed ? 'completed' : ''}`}
+              className={`lesson-item ${currentLesson?.id === lesson.id ? 'active' : ''}`}
               onClick={() => setCurrentLesson(lesson)}
             >
-              <span className={`lesson-icon ${lesson.type}`}>
-                {getLessonTypeIcon(lesson.type)}
-              </span>
+              <span className={`lesson-icon ${lesson.type}`}>{getLessonTypeIcon(lesson.type)}</span>
               <div className="lesson-info">
                 <span className="lesson-title">{lesson.title}</span>
                 <span className="lesson-duration">{lesson.duration}</span>
               </div>
-              {lesson.completed && (
-                <span className="lesson-check">✓</span>
-              )}
             </button>
           ))}
         </div>
       </div>
 
       <div className="lesson-content">
-        {currentLesson ? (
+        {isLoading ? (
+          <div className="no-lesson">
+            <p>A carregar conteúdo...</p>
+          </div>
+        ) : currentLesson ? (
           <>
             <div className="content-header">
               <span className={`lesson-type-badge ${currentLesson.type}`}>
@@ -141,9 +116,9 @@ const StudentCourseLesson = () => {
               </span>
               <span className="lesson-time">{currentLesson.duration}</span>
             </div>
-            
+
             <h2>{currentLesson.title}</h2>
-            
+
             <div className="content-body">
               {currentLesson.type === 'video' && (
                 <div className="video-placeholder">
@@ -151,10 +126,10 @@ const StudentCourseLesson = () => {
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
                   <p>Conteúdo em vídeo</p>
-                  <p className="muted">播放 {currentLesson.duration}</p>
+                  <p className="muted">Duração {currentLesson.duration}</p>
                 </div>
               )}
-              
+
               {currentLesson.type === 'reading' && (
                 <div className="reading-content">
                   <h3>Objetivos de Aprendizagem</h3>
@@ -163,14 +138,14 @@ const StudentCourseLesson = () => {
                     <li>Identificar os requisitos principais das normas aplicáveis</li>
                     <li>Aplicar os conhecimentos em contextos práticos</li>
                   </ul>
-                  
+
                   <h3>Conteúdo Principal</h3>
                   <p>
-                    Este módulo aborda os conceitos essenciais relacionados com {course.name}.
-                    Ao longo desta unidade, irá aprender os fundamentos teóricos e práticos
-                    necessários para a implementação eficaz de um sistema de gestão.
+                    Este módulo aborda os conceitos essenciais relacionados com {course.name}. Ao longo
+                    desta unidade, irá aprender fundamentos teóricos e práticos necessários para a
+                    implementação eficaz de um sistema de gestão.
                   </p>
-                  
+
                   <h3>Pontos-Chave</h3>
                   <ul>
                     <li>Primeiro ponto importante sobre o tema</li>
@@ -179,41 +154,37 @@ const StudentCourseLesson = () => {
                   </ul>
                 </div>
               )}
-              
+
               {currentLesson.type === 'exercise' && (
                 <div className="exercise-content">
                   <h3>Exercício Prático</h3>
                   <p>
-                    Aplique os conhecimentos adquiridos nesta atividade prática.
-                    Complete o exercício abaixo e submeta a sua resposta.
+                    Aplique os conhecimentos adquiridos nesta atividade prática. Complete o exercício e
+                    submeta a sua resposta.
                   </p>
-                  
+
                   <div className="exercise-box">
                     <h4>Caso de Estudo</h4>
                     <p>
-                      Uma empresa do setor industrial enfrenta desafios relacionados
-                      com práticas de suborno em operações internacionais. Como
-                      responsável de compliance, elabore um plano de ação.
+                      Uma empresa do setor industrial enfrenta desafios relacionados com práticas de
+                      suborno em operações internacionais. Como responsável de compliance, elabore um
+                      plano de ação.
                     </p>
-                    
-                    <textarea 
-                      placeholder="Escreva a sua resposta aqui..."
-                      rows={6}
-                      className="form-input"
-                    />
-                    
+
+                    <textarea placeholder="Escreva a sua resposta aqui..." rows={6} className="form-input" />
+
                     <button type="button" className="btn btn-primary">
                       Submeter Resposta
                     </button>
                   </div>
                 </div>
               )}
-              
+
               {currentLesson.type === 'quiz' && (
                 <div className="quiz-content">
                   <h3>Avaliação</h3>
                   <p>Responda às seguintes questões para avaliar os seus conhecimentos.</p>
-                  
+
                   <div className="quiz-question">
                     <h4>Questão 1</h4>
                     <p>Qual é o objetivo principal de um sistema de gestão antissuborno?</p>
@@ -232,25 +203,13 @@ const StudentCourseLesson = () => {
                       </label>
                     </div>
                   </div>
-                  
+
                   <button type="button" className="btn btn-primary">
                     Submeter Respostas
                   </button>
                 </div>
               )}
             </div>
-            
-            {!currentLesson.completed && (
-              <div className="content-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-primary"
-                  onClick={() => handleCompleteLesson(currentLesson.id)}
-                >
-                  Marcar como Concluído
-                </button>
-              </div>
-            )}
           </>
         ) : (
           <div className="no-lesson">

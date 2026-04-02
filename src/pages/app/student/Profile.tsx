@@ -1,9 +1,16 @@
-import { getAuth } from '../../../utils/auth';
+﻿import { getAuth } from '../../../utils/auth';
 
 const StudentProfile = () => {
   const auth = getAuth();
   const name = auth?.name ?? 'Aluno ILUNGI';
   const email = auth?.email ?? 'aluno@email.com';
+  const initials = name
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   return (
     <div className="app-page">
@@ -18,23 +25,47 @@ const StudentProfile = () => {
       <div className="app-grid-2">
         <div className="app-card">
           <h2>Dados pessoais</h2>
-          <div className="app-definition">
-            <div>
-              <span className="muted">Nome</span>
-              <strong>{name}</strong>
+          <div className="profile-personal-card">
+            <div className="profile-personal-header">
+              <div className="profile-personal-identity">
+                <span className="profile-personal-avatar">{initials}</span>
+                <div>
+                  <span className="profile-personal-label">Conta corporativa</span>
+                  <strong>{name}</strong>
+                  <span className="profile-personal-email">{email}</span>
+                </div>
+              </div>
+              <span className="pill pill--success">Ativo</span>
             </div>
-            <div>
-              <span className="muted">Email</span>
-              <strong>{email}</strong>
+
+            <div className="profile-personal-grid">
+              <div>
+                <span className="muted">Telefone</span>
+                <strong>+244 900 000 000</strong>
+              </div>
+              <div>
+                <span className="muted">Empresa</span>
+                <strong>—</strong>
+              </div>
+              <div>
+                <span className="muted">Departamento</span>
+                <strong>Gestão de Riscos</strong>
+              </div>
+              <div>
+                <span className="muted">Localização</span>
+                <strong>Luanda, Angola</strong>
+              </div>
             </div>
-            <div>
-              <span className="muted">Telefone</span>
-              <strong>+244 900 000 000</strong>
+
+            <div className="profile-personal-actions">
+              <button type="button" className="btn btn-primary btn-sm">
+                Atualizar dados
+              </button>
+              <button type="button" className="btn btn-ghost btn-sm">
+                Carregar foto
+              </button>
             </div>
           </div>
-          <button type="button" className="btn btn-primary btn-sm">
-            Atualizar dados
-          </button>
         </div>
 
         <div className="app-card">
@@ -60,6 +91,29 @@ const StudentProfile = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="app-card">
+        <h2>Preferências</h2>
+        <div className="form-grid">
+          <div>
+            <label>Idioma preferido</label>
+            <select className="form-input">
+              <option>Português</option>
+              <option>English</option>
+            </select>
+          </div>
+          <div>
+            <label>Notificações</label>
+            <select className="form-input">
+              <option>Ativas</option>
+              <option>Silenciadas</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" className="btn btn-primary btn-sm">
+          Guardar preferências
+        </button>
       </div>
     </div>
   );

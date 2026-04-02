@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { courses } from '../../../data/courses';
+﻿import { useEffect, useState } from 'react';
 import { useI18n } from '../../../i18n/I18nContext';
 import { Course } from '../../../data/courses';
+import { api } from '../../../services/api';
 
 // Bank details for payment
 const BANK_DETAILS = {
@@ -14,30 +13,15 @@ const BANK_DETAILS = {
   reference: 'AILUNGI/2026'
 };
 
-type EnrolledCourse = {
-  courseId: number;
-  status: 'pending' | 'approved' | 'rejected';
-  enrolledDate: string;
-  paymentReceipt?: string;
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  nif?: string;
-  company?: string;
-  jobTitle?: string;
-};
-
 const StudentCourses = () => {
   const { t } = useI18n();
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [showEnrollmentForm, setShowEnrollmentForm] = useState(false);
-  
-  // Mock enrolled courses (in real app, this would come from backend)
-  const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
-  
+  const [coursesList, setCoursesList] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   // Form state
   const [formData, setFormData] = useState({
     fullName: '',
@@ -49,10 +33,33 @@ const StudentCourses = () => {
     receiptFile: null as File | null
   });
 
-  const areas = [...new Set(courses.map((c) => c.area))];
+  useEffect(() => {
+    let isMounted = true;
 
-  const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    api
+      .getCourses()
+      .then(({ data }) => {
+        if (isMounted) {
+          setCoursesList(data);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const areas = [...new Set(coursesList.map((c) => c.area))];
+  const totalCourses = coursesList.length;
+
+  const filteredCourses = coursesList.filter((course) => {
+    const matchesSearch =
+      course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.code.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesArea = selectedArea === '' || course.area === selectedArea;
     return matchesSearch && matchesArea;
@@ -63,20 +70,16 @@ const StudentCourses = () => {
     setShowEnrollmentForm(true);
   };
 
-  const handleSubmitEnrollment = (e: React.FormEvent) => {
+  const handleSubmitEnrollment = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedCourse) return;
-    
-    // Create enrollment request
-    const newEnrollment: EnrolledCourse = {
+
+    await api.submitEnrollment({
       courseId: selectedCourse.id,
-      status: 'pending',
-      enrolledDate: new Date().toISOString(),
       ...formData
-    };
-    
-    setEnrolledCourses([...enrolledCourses, newEnrollment]);
+    });
+
     setShowEnrollmentForm(false);
     setSelectedCourse(null);
     setFormData({
@@ -88,12 +91,8 @@ const StudentCourses = () => {
       jobTitle: '',
       receiptFile: null
     });
-    
-    alert(t.student.enrollmentPending + '! ' + t.student.waitApproval);
-  };
 
-  const getEnrollmentStatus = (courseId: number): EnrolledCourse | undefined => {
-    return enrolledCourses.find(ec => ec.courseId === courseId);
+    alert('Pedido de inscrição enviado com sucesso. Aguarde a validação da equipa ILUNGI.');
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,8 +110,8 @@ const StudentCourses = () => {
             <h1>{t.student.submitEnrollment}</h1>
             <p>{selectedCourse.name}</p>
           </div>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-ghost"
             onClick={() => {
               setShowEnrollmentForm(false);
@@ -133,63 +132,63 @@ const StudentCourses = () => {
                   type="text"
                   required
                   value={formData.fullName}
-                  onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label>{t.common.email} *</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label>{t.student.phone} *</label>
                 <input
                   type="tel"
                   required
                   value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label>{t.student.nif}</label>
                 <input
                   type="text"
                   value={formData.nif}
-                  onChange={(e) => setFormData({...formData, nif: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, nif: e.target.value })}
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label>{t.student.company}</label>
                 <input
                   type="text"
                   value={formData.company}
-                  onChange={(e) => setFormData({...formData, company: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label>{t.student.jobTitle}</label>
                 <input
                   type="text"
                   value={formData.jobTitle}
-                  onChange={(e) => setFormData({...formData, jobTitle: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label>{t.student.uploadReceipt} *</label>
                 <input
@@ -199,18 +198,23 @@ const StudentCourses = () => {
                   onChange={handleFileChange}
                   className="form-input file-input"
                 />
-                <p className="form-hint">Envie o comprovativo de pagamento</p>
+                <p className="form-hint">Envie o comprovativo de pagamento.</p>
               </div>
-              
+
               <button type="submit" className="btn btn-primary btn-full">
                 {t.student.submitEnrollment}
               </button>
             </form>
           </div>
-          
+
           <div className="payment-info-card">
             <h3>{t.student.paymentInstructions}</h3>
-            
+
+            <div className="payment-amount">
+              <span className="label">Investimento</span>
+              <span className="amount">Sob consulta</span>
+            </div>
+
             <div className="bank-details">
               <h4>{t.student.bankDetails}</h4>
               <div className="detail-row">
@@ -238,13 +242,21 @@ const StudentCourses = () => {
                 <span>{BANK_DETAILS.reference}</span>
               </div>
             </div>
-            
+
             <div className="course-summary">
               <h4>Resumo do Curso</h4>
-              <p><strong>Código:</strong> {selectedCourse.code}</p>
-              <p><strong>Área:</strong> {selectedCourse.area}</p>
-              <p><strong>Modalidade:</strong> {selectedCourse.modality}</p>
-              <p><strong>Horário:</strong> {selectedCourse.schedule}</p>
+              <p>
+                <strong>Código:</strong> {selectedCourse.code}
+              </p>
+              <p>
+                <strong>Área:</strong> {selectedCourse.area}
+              </p>
+              <p>
+                <strong>Modalidade:</strong> {selectedCourse.modality}
+              </p>
+              <p>
+                <strong>Horário:</strong> {selectedCourse.schedule}
+              </p>
             </div>
           </div>
         </div>
@@ -258,7 +270,52 @@ const StudentCourses = () => {
         <div>
           <span className="app-eyebrow">AILUNGI</span>
           <h1>{t.student.availableCourses}</h1>
-          <p>Explore o catálogo de cursos e inscreva-se nos que mais lhe interessam.</p>
+          <p>Explore o catálogo de cursos e solicite a sua inscrição.</p>
+        </div>
+      </div>
+
+      <div className="stat-grid">
+        <div className="stat-card">
+          <strong>{totalCourses}</strong>
+          <span>Cursos disponíveis</span>
+          <p>Atualizados com normas e práticas globais.</p>
+        </div>
+        <div className="stat-card">
+          <strong>{areas.length}</strong>
+          <span>Áreas executivas</span>
+          <p>Selecione a área mais alinhada ao seu objetivo.</p>
+        </div>
+        <div className="stat-card">
+          <strong>Suporte</strong>
+          <span>Especializado</span>
+          <p>Equipa pronta para orientar a sua inscrição.</p>
+        </div>
+      </div>
+
+      <div className="info-panel">
+        <div className="info-card">
+          <h3>Como funciona a inscrição</h3>
+          <ol className="steps-list">
+            <li>Selecione o curso desejado.</li>
+            <li>Preencha o formulário e envie o comprovativo.</li>
+            <li>Aguarde a validação do pagamento.</li>
+            <li>Receba o acesso completo ao conteúdo.</li>
+          </ol>
+        </div>
+        <div className="info-card">
+          <h3>Documentos necessários</h3>
+          <ul className="bullet-list">
+            <li>Comprovativo de pagamento</li>
+            <li>Documento de identificação</li>
+            <li>Dados de contacto atualizados</li>
+          </ul>
+        </div>
+        <div className="info-card">
+          <h3>Suporte rápido</h3>
+          <p className="muted">Dúvidas sobre inscrição? A nossa equipa ajuda em até 24h.</p>
+          <button type="button" className="btn btn-secondary btn-sm">
+            Falar com suporte
+          </button>
         </div>
       </div>
 
@@ -278,66 +335,56 @@ const StudentCourses = () => {
         >
           <option value="">{t.common.filter} - Todas as áreas</option>
           {areas.map((area) => (
-            <option key={area} value={area}>{area}</option>
+            <option key={area} value={area}>
+              {area}
+            </option>
           ))}
         </select>
+        <span className="filter-hint">{filteredCourses.length} cursos encontrados</span>
       </div>
 
-      <div className="courses-grid">
-        {filteredCourses.map((course) => {
-          const enrollment = getEnrollmentStatus(course.id);
-          
-          return (
-            <div key={course.id} className="course-card">
-              <div className="course-card-header">
-                <span className="course-code">{course.code}</span>
-                <span className="course-area">{course.area}</span>
-              </div>
-              <h3 className="course-title">{course.name}</h3>
-              <div className="course-meta">
-                <span>{course.schedule}</span>
-              </div>
-              
-              {enrollment ? (
-                <div className="enrollment-status">
-                  {enrollment.status === 'pending' && (
-                    <span className="status-pending">
-                      {t.student.enrollmentPending}
-                    </span>
-                  )}
-                  {enrollment.status === 'approved' && (
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={() => navigate('/app/aluno/percurso')}
-                    >
-                      {t.student.continue}
-                    </button>
-                  )}
-                  {enrollment.status === 'rejected' && (
-                    <span className="status-rejected">
-                      Inscrição rejeitada
-                    </span>
-                  )}
+      {isLoading ? (
+        <div className="empty-state">
+          <p>A carregar cursos...</p>
+        </div>
+      ) : (
+        <>
+          <div className="courses-grid">
+            {filteredCourses.map((course) => (
+              <div key={course.id} className="app-course-card">
+                <div className="app-course-header">
+                  <span className="course-code">{course.code}</span>
+                  <span className="app-course-area">{course.area}</span>
                 </div>
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => handleEnroll(course)}
-                >
+                <h3 className="course-title clamp-2">{course.name}</h3>
+                <div className="app-course-meta">
+                  <span>
+                    <span>Modalidade</span>
+                    <strong>{course.modality}</strong>
+                  </span>
+                  <span>
+                    <span>Carga horária</span>
+                    <strong>{course.workload}</strong>
+                  </span>
+                  <span>
+                    <span>Agenda</span>
+                    <strong>{course.schedule}</strong>
+                  </span>
+                </div>
+
+                <button type="button" className="btn btn-primary" onClick={() => handleEnroll(course)}>
                   {t.student.enrollNow}
                 </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            ))}
+          </div>
 
-      {filteredCourses.length === 0 && (
-        <div className="empty-state">
-          <p>{t.common.noResults}</p>
-        </div>
+          {filteredCourses.length === 0 && (
+            <div className="empty-state">
+              <p>{t.common.noResults}</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
